@@ -7,7 +7,7 @@
                v-model="calcPV.pa"/>
         <input type="number" placeholder="Marge" class="border px-2 py-1" @input="calcPVFn" v-model="calcPV.margin"/>
         <span>=</span>
-        <p>{{ calcPV.result?.toString().replace('.',',') || '' }}</p>
+        <p>{{ calcPV.result || '' }}</p>
         <span>€</span>
         <button @click="(e) => copyToClipboard(e, calcPV.result)" class="border p-2">Copier la valeur</button>
       </div>
