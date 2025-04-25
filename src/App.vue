@@ -7,7 +7,7 @@
                v-model="calcPV.pa"/>
         <input type="number" placeholder="Marge" class="border px-2 py-1" @input="calcPVFn" v-model="calcPV.margin"/>
         <span>=</span>
-        <p>{{ calcPV.result || '' }}</p>
+        <p>{{ calcPV.result?.toString().replace('.',',') || '' }}</p>
         <span>€</span>
         <button @click="(e) => copyToClipboard(e, calcPV.result)" class="border p-2">Copier la valeur</button>
       </div>
@@ -52,27 +52,27 @@ import {ref} from "vue";
 const calcPV = ref({
   pa: ref<number | null>(null),
   margin: ref<number | null>(null),
-  result: ref<number | null>(null)
+  result: ref<number | string | null>(null)
 })
 
 const calcPercentage = ref({
   pv: ref<number | null>(null),
   operator: ref<string>('+'),
   percentage: ref<number | null>(null),
-  result: ref<number | null>(null)
+  result: ref<number | string | null>(null)
 })
 
 const calcMargin = ref({
   pv: ref<number | null>(null),
   pa: ref<number | null>(null),
-  result: ref<number | null>(null)
+  result: ref<number | string | null>(null)
 })
 
 const calcPVFn = () => {
   if (calcPV.value.pa && calcPV.value.margin) {
     const m = (100 - calcPV.value.margin) / 100
 
-    calcPV.value.result = (calcPV.value.pa / m).toFixed(4) as unknown as number
+    calcPV.value.result = (calcPV.value.pa / m).toFixed(4).toString().replace(".",",")
   }
 }
 
@@ -81,9 +81,9 @@ const calcPercentageFn = () => {
     const p = calcPercentage.value.percentage / 100
 
     if (calcPercentage.value.operator === '+') {
-      calcPercentage.value.result = (calcPercentage.value.pv + (calcPercentage.value.pv * p)).toFixed(4) as unknown as number
+      calcPercentage.value.result = (calcPercentage.value.pv + (calcPercentage.value.pv * p)).toFixed(4).toString().replace(".",",")
     } else {
-      calcPercentage.value.result = (calcPercentage.value.pv - (calcPercentage.value.pv * p)).toFixed(4) as unknown as number
+      calcPercentage.value.result = (calcPercentage.value.pv - (calcPercentage.value.pv * p)).toFixed(4).toString().replace(".",",")
     }
   }
 }
@@ -92,7 +92,7 @@ const calcMarginFn = () => {
   if (calcMargin.value.pv && calcMargin.value.pa) {
     const m = (1 - (calcMargin.value.pa / calcMargin.value.pv)) * 100
 
-    calcMargin.value.result = m.toFixed(4) as unknown as number
+    calcMargin.value.result = m.toFixed(4).toString().replace(".",",")
   }
 }
 
@@ -110,7 +110,7 @@ const resetFields = () => {
   calcMargin.value.result = null
 }
 
-const copyToClipboard = (e: Event, value: number | null) => {
+const copyToClipboard = (e: Event, value: number | string | null) => {
   if (!value) {
     alert('Aucune valeur à copier')
     return
