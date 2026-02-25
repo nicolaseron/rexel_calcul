@@ -42,6 +42,23 @@
         <button @click="(e) => copyToClipboard(e, calcMargin.result)" class="border p-2">Copier la valeur</button>
       </div>
     </section>
+    <section id="margin-volume" class="my-20">
+      <h1 class="text-3xl underline font-bold">Calcul volume de marge</h1>
+      <div class="mt-10 flex items-center gap-x-5">
+        <input type="number" placeholder="Chiffre d'affaires" class="border px-2 py-1"
+               @input="calcMarginVolumeFn"
+               v-model="calcMarginVolume.ca"/>
+        <input type="number" placeholder="Marge (%)" class="border px-2 py-1"
+               @input="calcMarginVolumeFn"
+               v-model="calcMarginVolume.margin"/>
+        <span>=</span>
+        <p>{{ calcMarginVolume.result || '' }}</p>
+        <span>€</span>
+        <button @click="(e) => copyToClipboard(e, calcMarginVolume.result)" class="border p-2">
+          Copier la valeur
+        </button>
+      </div>
+    </section>
     <button @click="resetFields" class="border p-2 block mx-auto mt-16 bg-red-600 text-white">Videz les champs</button>
   </main>
 </template>
@@ -96,6 +113,25 @@ const calcMarginFn = () => {
   }
 }
 
+const calcMarginVolume = ref({
+  ca: ref<number | null>(null),
+  margin: ref<number | null>(null),
+  result: ref<number | string | null>(null)
+})
+
+const calcMarginVolumeFn = () => {
+  if (  calcMarginVolume.value.ca !== null &&
+        calcMarginVolume.value.margin !== null) {
+    const m = calcMarginVolume.value.margin / 100
+    const volume = calcMarginVolume.value.ca * m
+
+    calcMarginVolume.value.result = volume
+      .toFixed(4)
+      .toString()
+      .replace(".", ",")
+  }
+}
+
 const resetFields = () => {
   calcPV.value.pa = null
   calcPV.value.margin = null
@@ -108,6 +144,10 @@ const resetFields = () => {
   calcMargin.value.pv = null
   calcMargin.value.pa = null
   calcMargin.value.result = null
+
+  calcMarginVolume.value.ca = null
+  calcMarginVolume.value.margin = null
+  calcMarginVolume.value.result = null
 }
 
 const copyToClipboard = (e: Event, value: number | string | null) => {
